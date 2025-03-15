@@ -535,5 +535,42 @@
 
         // Chart Management
         function updateChart(chartId, type, labels, data, colors, comparisonValue) {
-            const ctx = document.getElementById
+            const ctx = document.getElementById (chartId).getContext('2d');
+            if(charts[chartId]) charts[chartId].destroy();
+            
 
+const config = {
+                type: type,
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Data',
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: type === 'bar' ? { y: { beginAtZero: true } } : {}
+                }
+            };
+            
+            if(comparisonValue) {
+                config.data.datasets.push({
+                    label: 'Your Value',
+                    data: [comparisonValue],
+                    type: 'line',
+                    borderColor: '#000',
+                    borderWidth: 2,
+                    pointRadius: 5
+                });
+            }
+            
+            charts[chartId] = new Chart(ctx, config);
+        }
+    </script>
+</body>
+</html>
