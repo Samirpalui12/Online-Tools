@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Calculator Suite</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --accent: #e74c3c;
+            --background: #ecf0f1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--secondary);
+        }
+
+        .category-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+            display: none;
+        }
+
+        .category-section.active {
+            display: block;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .calculator-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+
+        .result-box {
+            padding: 15px;
+            background: #e8f4ff;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+
+        .simulator-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .coin {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            transform-style: preserve-3d;
+            cursor: pointer;
+            transition: transform 1s;
+        }
+
+        .coin .side {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: #ffd700;
+            border: 3px solid #c0a600;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .coin .tails {
+            transform: rotateX(180deg);
+        }
+
+        .dice {
+            width: 100px;
+            height: 100px;
+            position: relative;
+            transform-style: preserve-3d;
+            cursor: pointer;
+            transition: transform 1s ease-out;
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            border: 2px solid #333;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-btn {
+                flex: 1;
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; margin: 20px 0; color: var(--primary);">Ultimate Calculator Suite</h1>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showCategory('health')">Health</button>
+            <button class="tab-btn" onclick="showCategory('finance')">Finance</button>
+            <button class="tab-btn" onclick="showCategory('unit')">Unit Converters</button>
+            <button class="tab-btn" onclick="showCategory('simulator')">Simulators</button>
+        </div>
+
+        <!-- Health Calculators -->
+        <div id="health" class="category-section active">
+            <div class="tool-grid">
+                <!-- BMI Calculator -->
+                <div class="calculator-box">
+                    <h3>BMI Calculator</h3>
+                    <div class="input-group">
+                        <label>Weight (kg)</label>
+                        <input type="number" id="weight" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Height (cm)</label>
+                        <input type="number" id="height">
+                    </div>
+                    <button class="tab-btn" onclick="calculateBMI()">Calculate</button>
+                    <div class="result-box" id="bmiResult"></div>
+                    <div class="chart-container">
+                        <canvas id="bmiChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Age Calculator -->
+                <div class="calculator-box">
+                    <h3>Age Calculator</h3>
+                    <div class="input-group">
+                        <label>Date of Birth</label>
+                        <input type="date" id="dob" max="<?= date('Y-m-d') ?>">
+                    </div>
+                    <div class="result-box" id="ageResult"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Financial Calculators -->
+        <div id="finance" class="category-section">
+            <div class="tool-grid">
+                <!-- EMI Calculator -->
+                <div class="calculator-box">
+                    <h3>Loan EMI Calculator</h3>
+                    <div class="input-group">
+                        <label>Loan Amount (₹)</label>
+                        <input type="number" id="loanAmount">
+                    </div>
+                    <div class="input-group">
+                        <label>Interest Rate (%)</label>
+                        <input type="number" id="interestRate" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Loan Term (years)</label>
+                        <input type="number" id="loanTerm">
+                    </div>
+                    <button class="tab-btn" onclick="calculateEMI()">Calculate</button>
+                    <div class="result-box">
+                        <p>Monthly EMI: ₹<span id="emiAmount">0</span></p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="emiChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- SIP Calculator -->
+                <div class="calculator-box">
+                    <h3>SIP Calculator</h3>
+                    <div class="input-group">
+                        <label>Monthly Investment (₹)</label>
+                        <input type="number" id="sipAmount">
+                    </div>
+                    <div class="input-group">
+                        <label>Annual Return (%)</label>
+                        <input type="number" id="sipRate" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Years</label>
+                        <input type="number" id="sipYears">
+                    </div>
+                    <button class="tab-btn" onclick="calculateSIP()">Calculate</button>
+                    <div class="result-box">
+                        <p>Maturity Value: ₹<span id="sipTotal">0</span></p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="sipChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unit Converters -->
+        <div id="unit" class="category-section">
+            <div class="tool-grid">
+                <!-- Length Converter -->
+                <div class="calculator-box">
+                    <h3>Length Converter</h3>
+                    <div class="input-group">
+                        <input type="number" id="lengthValue" placeholder="Enter value">
+                    </div>
+                    <div class="input-group">
+                        <select id="lengthFrom">
+                            <option value="mm">Millimeters</option>
+                            <option value="cm">Centimeters</option>
+                            <option value="m">Meters</option>
+                            <option value="km">Kilometers</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <select id="lengthTo">
+                            <option value="cm">Centimeters</option>
+                            <option value="m">Meters</option>
+                            <option value="km">Kilometers</option>
+                            <option value="inch">Inches</option>
+                        </select>
+                    </div>
+                    <button class="tab-btn" onclick="convertLength()">Convert</button>
+                    <div class="result-box" id="lengthResult"></div>
+                </div>
+
+                <!-- Temperature Converter -->
+                <div class="calculator-box">
+                    <h3>Temperature Converter</h3>
+                    <div class="input-group">
+                        <input type="number" id="tempValue" placeholder="Enter value">
+                    </div>
+                    <div class="input-group">
+                        <select id="tempFrom">
+                            <option value="c">Celsius</option>
+                            <option value="f">Fahrenheit</option>
+                            <option value="k">Kelvin</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <select id="tempTo">
+                            <option value="f">Fahrenheit</option>
+                            <option value="c">Celsius</option>
+                            <option value="k">Kelvin</option>
+                        </select>
+                    </div>
+                    <button class="tab-btn" onclick="convertTemp()">Convert</button>
+                    <div class="result-box" id="tempResult"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulators -->
+        <div id="simulator" class="category-section">
+            <div class="tool-grid">
+                <!-- Coin Flip -->
+                <div class="calculator-box">
+                    <h3>Coin Flip Simulator</h3>
+                    <div class="simulator-container">
+                        <div class="coin" onclick="flipCoin()">
+                            <div class="side heads">₹</div>
+                            <div class="side tails">1</div>
+                        </div>
+                    </div>
+                    <div class="result-box" id="coinResult"></div>
+                </div>
+
+                <!-- Dice Roller -->
+                <div class="calculator-box">
+                    <h3>Dice Roller</h3>
+                    <div class="simulator-container">
+                        <div class="dice" onclick="rollDice()">
+                            <div class="dice-face front">1</div>
+                            <div class="dice-face back">6</div>
+                            <div class="dice-face right">4</div>
+                            <div class="dice-face left">3</div>
+                            <div class="dice-face top">2</div>
+                            <div class="dice-face bottom">5</div>
+                        </div>
+                    </div>
+                    <div class="result-box" id="diceResult"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let charts = {};
+
+        // Navigation
+        function showCategory(categoryId) {
+            document.querySelectorAll('.category-section').forEach(cat => cat.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(categoryId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Health Calculators
+        function calculateBMI() {
+            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value)/100;
+            const bmi = weight / (height ** 2);
+            
+            updateChart('bmiChart', 'bar', 
+                ['Underweight', 'Normal', 'Overweight', 'Obese'],
+                [18.5, 24.9, 29.9, 40],
+                ['#ff6384', '#36a2eb', '#ffce56', '#4bc0c0'],
+                bmi
+            );
+            
+            document.getElementById('bmiResult').innerHTML = `
+                BMI: ${bmi.toFixed(1)} (${getBMICategory(bmi)})
+            `;
+        }
+
+        function getBMICategory(bmi) {
+            if(bmi < 18.5) return 'Underweight';
+            if(bmi < 25) return 'Normal';
+            if(bmi < 30) return 'Overweight';
+            return 'Obese';
+        }
+
+        // Age Calculator
+        function calculateAge() {
+            const dob = new Date(document.getElementById('dob').value);
+            const now = new Date();
+            let age = now.getFullYear() - dob.getFullYear();
+            const monthDiff = now.getMonth() - dob.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && now.getDate() < dob.getDate())) {
+                age--;
+            }
+            
+            const diff = now - dob;
+            const years = age;
+            const months = years * 12 + (now.getMonth() - dob.getMonth());
+            const weeks = Math.floor(diff / (1000 * 60 * 60 * 24 * 7));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor(diff / 3600000);
+            const minutes = Math.floor(diff / 60000);
+            const seconds = Math.floor(diff / 1000);
+            
+            document.getElementById('ageResult').innerHTML = `
+                <div>${years} Years</div>
+                <div>${months} Months</div>
+                <div>${weeks} Weeks</div>
+                <div>${days} Days</div>
+                <div>${hours} Hours</div>
+                <div>${minutes} Minutes</div>
+                <div>${seconds} Seconds</div>
+            `;
+        }
+
+        document.getElementById('dob').addEventListener('change', calculateAge);
+        setInterval(calculateAge, 1000);
+
+        // Financial Calculators
+        function calculateEMI() {
+            const P = parseFloat(document.getElementById('loanAmount').value);
+            const r = parseFloat(document.getElementById('interestRate').value)/1200;
+            const n = parseFloat(document.getElementById('loanTerm').value)*12;
+            const emi = (P * r * (1 + r)**n) / ((1 + r)**n - 1);
+            
+            updateChart('emiChart', 'pie', 
+                ['Principal', 'Interest'],
+                [P, emi * n - P],
+                ['#4CAF50', '#2196F3']
+            );
+            
+            document.getElementById('emiAmount').textContent = emi.toFixed(2);
+        }
+
+        function calculateSIP() {
+            const P = parseFloat(document.getElementById('sipAmount').value);
+            const r = parseFloat(document.getElementById('sipRate').value)/1200;
+            const n = parseFloat(document.getElementById('sipYears').value)*12;
+            const FV = P * ((((1 + r)**n - 1)/r) * (1 + r));
+            
+            const years = Array.from({length: n/12}, (_, i) => i + 1);
+            const values = years.map(y => {
+                const months = y * 12;
+                return P * ((((1 + r)**months - 1)/r) * (1 + r));
+            });
+            
+            updateChart('sipChart', 'line', years, values, ['#4CAF50']);
+            document.getElementById('sipTotal').textContent = FV.toFixed(2);
+        }
+
+        // Unit Converters
+        function convertLength() {
+            const value = parseFloat(document.getElementById('lengthValue').value);
+            const from = document.getElementById('lengthFrom').value;
+            const to = document.getElementById('lengthTo').value;
+            const factors = {
+                mm: 0.001, cm: 0.01, m: 1, km: 1000, inch: 0.0254
+            };
+            const result = (value * factors[from]) / factors[to];
+            document.getElementById('lengthResult').textContent = `${result.toFixed(2)} ${to}`;
+        }
+
+        function convertTemp() {
+            const value = parseFloat(document.getElementById('tempValue').value);
+            const from = document.getElementById('tempFrom').value;
+            const to = document.getElementById('tempTo').value;
+            let result = value;
+            
+            if(from === 'c' && to === 'f') result = (value * 9/5) + 32;
+            if(from === 'f' && to === 'c') result = (value - 32) * 5/9;
+            if(from === 'c' && to === 'k') result = value + 273.15;
+            if(from === 'k' && to === 'c') result = value - 273.15;
+            if(from === 'f' && to === 'k') result = (value - 32) * 5/9 + 273.15;
+            if(from === 'k' && to === 'f') result = (value - 273.15) * 9/5 + 32;
+            
+            document.getElementById('tempResult').textContent = `${result.toFixed(2)}°${to.toUpperCase()}`;
+        }
+
+        // Simulators
+        function flipCoin() {
+            const coin = document.querySelector('.coin');
+            const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
+            coin.style.transform = `rotateX(${result === 'Heads' ? 0 : 1800}deg)`;
+            setTimeout(() => {
+                document.getElementById('coinResult').textContent = `Result: ${result}`;
+            }, 1000);
+        }
+
+        function rollDice() {
+            const dice = document.querySelector('.dice');
+            const result = Math.floor(Math.random() * 6) + 1;
+            const rotations = {
+                x: Math.floor(Math.random() * 4) * 360,
+                y: Math.floor(Math.random() * 4) * 360,
+                z: Math.floor(Math.random() * 4) * 360
+            };
+            dice.style.transform = `rotateX(${rotations.x + 720}deg) rotateY(${rotations.y + 720}deg) rotateZ(${rotations.z + 720}deg)`;
+            setTimeout(() => {
+                document.getElementById('diceResult').textContent = `Result: ${result}`;
+            }, 1000);
+        }
+
+        // Chart Management
+        function updateChart(chartId, type, labels, data, colors, comparisonValue) {
+            const ctx = document.getElementById
