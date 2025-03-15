@@ -536,3 +536,4 @@
         // Chart Management
         function updateChart(chartId, type, labels, data, colors, comparisonValue) {
             const ctx = document.getElementById
+
